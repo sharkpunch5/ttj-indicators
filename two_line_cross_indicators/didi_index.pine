@@ -1,0 +1,25 @@
+//==============================================================================
+// INDICATOR 1  (C1) - Trigger / Confirmation - DIDI Index
+//==============================================================================
+// Toggle C1 inclusion in strategy
+Ind_1_Check_Trig = input(true, title = "Indicator 1 - C1 - Trigger")
+Ind_1_Check_Conf = input(false, title = "Indicator 1 - C1 - Confirmation")
+
+// DIDI Index function
+DidicurtaLength = input(title="Curta (Short) Length", defval=3)
+DidimediaLength = input(title="Media (Medium) Length", defval=8)
+DidilongaLength = input(title="Longa (Long) Length", defval=20)
+Didisrc = close
+
+Didimedia = sma(Didisrc, DidimediaLength)
+Didicurta = sma(Didisrc, DidicurtaLength) / Didimedia
+Didilonga = sma(Didisrc, DidilongaLength) / Didimedia
+
+// Trigger Long and Short Orders
+Ind_1_L_Trigger = Ind_1_Check_Trig ? crossover(Didicurta,Didilonga) ? true : false : false
+Ind_1_S_Trigger = Ind_1_Check_Trig ? crossunder(Didicurta,Didilonga) ? true : false : false
+
+// Confirmation Long and Short Orders
+Ind_1_L_Conf = Ind_1_Check_Conf ? Didicurta > Didilonga ? true : false : true
+Ind_1_S_Conf = Ind_1_Check_Conf ? Didicurta < Didilonga ? true : false : true
+//==============================================================================
