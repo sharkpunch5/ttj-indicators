@@ -1,0 +1,32 @@
+//==============================================================================
+// INDICATOR 1  (C1) - Trigger / Confirmation - QQE
+//==============================================================================
+// Toggle C1 inclusion in strategy
+Ind_1_Check_Trig = input(true, title = "Indicator 1 - C1 - Trigger")
+Ind_1_Check_Conf = input(false, title = "Indicator 1 - C1 - Confirmation")
+
+// QQE Function
+qqe_src=close
+qqe_length = input(14,"Length", minval=1)
+qqe_SSF=input(5, "Smoothing Factor", minval=1)
+RSII=ema(rsi(qqe_src,qqe_length),qqe_SSF)
+TR=abs(RSII-RSII[1])
+wwalpha = 1/ qqe_length
+WWMA = 0.0
+WWMA := wwalpha*TR + (1-wwalpha)*nz(WWMA[1])
+ATRRSI=0.0
+ATRRSI := wwalpha*WWMA + (1-wwalpha)*nz(ATRRSI[1])
+QQEF=ema(rsi(qqe_src,qqe_length),qqe_SSF)
+QUP=QQEF+ATRRSI*4.236
+QDN=QQEF-ATRRSI*4.236
+QQES=0.0
+QQES:=QUP<nz(QQES[1]) ? QUP : QQEF>nz(QQES[1]) and QQEF[1]<nz(QQES[1]) ? QDN :  QDN>nz(QQES[1]) ? QDN : QQEF<nz(QQES[1]) and QQEF[1]>nz(QQES[1]) ? QUP : nz(QQES[1])
+
+// Trigger Long and Short Orders
+Ind_1_L_Trigger = Ind_1_Check_Trig ? crossover(QQEF,QQES) ? true : false : false
+Ind_1_S_Trigger = Ind_1_Check_Trig ? crossunder(QQEF,QQES) ? true : false : false
+
+// Confirmation Long and Short Orders
+Ind_1_L_Conf = Ind_1_Check_Conf ? QQEF > QQES ? true : false : true
+Ind_1_S_Conf = Ind_1_Check_Conf ? QQEF < QQES ? true : false : true
+//==============================================================================
